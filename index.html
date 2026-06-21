@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lara Rotenberg</title>
+<style>
+  /* =========================================================
+     PORTFOLIO TEMPLATE — dark "Mac app" style
+     Edit your content in the DATA section inside the JS code
+     block near the bottom of this file.
+     ========================================================= */
+
+  :root{
+    --bg-app: #1c1c1c;
+    --bg-sidebar: #1a1a1a;
+    --bg-content: #1f1f1f;
+    --line: #2e2e2e;
+    --ink: #ffffff;
+    --ink-dim: #8a8a8a;
+    --ink-dimmer: #5e5e5e;
+    --accent-orange: #ffa45b;
+    --accent-green: #68d27c;
+    --accent-purple: #d75de7;
+    --folder-blue: #4aa3e0;
+    --traffic-red: #ff5f57;
+    --traffic-yellow: #febc2e;
+    --traffic-green: #28c840;
+    --font-body: -apple-system, "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0; padding:0; height:100%;
+    background: var(--bg-app);
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  a{ color:inherit; }
+
+  #app{
+    display:flex;
+    height:100vh;
+    width:100vw;
+    overflow:hidden;
+  }
+
+  /* ---------------- Sidebar ---------------- */
+  #sidebar{
+    width: 240px;
+    flex-shrink:0;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    overflow-y:auto;
+  }
+  .titlebar{
+    height: 44px;
+    display:flex; align-items:center;
+    padding: 0 14px;
+    gap: 8px;
+    flex-shrink:0;
+  }
+  .traffic{ width:11px; height:11px; border-radius:50%; }
+  .traffic.red{ background: var(--traffic-red); }
+  .traffic.yellow{ background: var(--traffic-yellow); }
+  .traffic.green{ background: var(--traffic-green); }
+  .titlebar .site-title{
+    font-size: 12.5px; color: var(--ink-dim);
+    margin-left: 4px;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+
+  .nav{ padding: 6px 0 18px; }
+  .nav-group{ margin-top: 14px; }
+  .nav-group-label{
+    font-size: 11px; color: var(--ink-dimmer);
+    padding: 0 16px; margin-bottom: 4px;
+    text-transform: none;
+  }
+  .nav-item{
+    display:flex; align-items:center; gap: 8px;
+    padding: 5px 16px;
+    font-size: 13px; color: var(--ink-dim);
+    cursor:pointer;
+    user-select:none;
+    white-space:nowrap;
+  }
+  .nav-item .folder-glyph{
+    width:14px; height:14px; flex-shrink:0;
+    opacity:0.85;
+    display:inline-flex;
+    color: var(--ink-dim);
+  }
+  .nav-item:hover{ color: var(--ink); }
+  .nav-item.active{ color: var(--ink); }
+  .nav-item.active .folder-glyph,
+  .nav-item:hover .folder-glyph{ opacity:1; color: var(--ink); }
+
+  /* ---------------- Content area ---------------- */
+  #content{
+    flex:1;
+    overflow-y:auto;
+    background: var(--bg-content);
+  }
+  .panel{ padding: 28px 40px 80px; }
+
+  /* project page layout (image 1 style) */
+  .project-header{
+    display:flex; justify-content:space-between; gap: 60px;
+    margin-bottom: 36px;
+  }
+  .project-meta{
+    font-size: 12.5px; color: var(--ink-dim);
+    line-height: 1.6;
+    flex-shrink:0;
+    min-width: 160px;
+  }
+  .project-meta .proj-title{ color: var(--ink); font-size: 13.5px; font-weight:600; }
+  .project-meta .proj-category{
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 11px;
+    color: var(--ink-dim);
+    margin-top: 4px;
+  }
+  .project-desc{
+    font-size: 13.5px; color: var(--ink-dim);
+    line-height: 1.7;
+    max-width: 620px;
+  }
+  .project-desc strong{ color: var(--ink); font-weight:600; }
+
+  .project-images{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px 20px;
+  }
+  .project-photo{
+    display:flex; flex-direction:column;
+    cursor: zoom-in;
+  }
+  .project-photo img{
+    display:block;
+    width:100%;
+    height: auto;
+    aspect-ratio: 5 / 4;
+    object-fit: contain;
+    border-radius: 6px;
+    background:#2a2a2a;
+  }
+  .project-photo .photo-caption{
+    margin-top: 7px;
+    font-size: 11.5px;
+    color: var(--ink-dim);
+  }
+  .project-photo:hover .photo-caption{ color: var(--ink); }
+
+  /* ---------------- Lightbox ---------------- */
+  #lightbox-backdrop{
+    position:fixed; inset:0; background: rgba(0,0,0,0.88);
+    display:none; align-items:center; justify-content:center;
+    flex-direction:column;
+    z-index:300;
+  }
+  #lightbox-backdrop.open{ display:flex; }
+  #lightbox-stage{
+    display:flex; align-items:center; justify-content:center;
+    gap: 18px;
+    max-width: 94vw;
+  }
+  #lightbox-backdrop img{
+    max-width: 84vw; max-height: 80vh;
+    border-radius: 6px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    cursor: zoom-out;
+  }
+  #lightbox-caption{
+    margin-top: 14px;
+    color: var(--ink-dim);
+    font-size: 12.5px;
+  }
+  .lightbox-arrow{
+    color:#fff;
+    font-size: 28px;
+    width: 44px; height: 44px;
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    opacity:0.65;
+    border-radius: 50%;
+    user-select:none;
+  }
+  .lightbox-arrow:hover{ opacity:1; background: rgba(255,255,255,0.08); }
+  .lightbox-arrow.disabled{ opacity:0.15; cursor:default; pointer-events:none; }
+  #lightbox-close{
+    position:fixed; top:18px; right:24px;
+    color:#fff; font-size:28px; line-height:1;
+    cursor:pointer; opacity:0.8;
+  }
+  #lightbox-close:hover{ opacity:1; }
+
+
+
+  /* grid view (image 3 style — home & project listings) */
+  .grid-view{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, 150px);
+    gap: 32px 24px;
+  }
+  .home-top-row{
+    padding-bottom: 28px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--line);
+  }
+  .projects-grid{
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px 28px;
+    max-width: 1040px;
+  }
+  .projects-grid .grid-item .thumb{
+    width: 100%;
+    height: auto;
+    aspect-ratio: 5 / 4;
+  }
+  .projects-grid .grid-item .thumb.folder svg{ width: 120px; height: 104px; }
+  .grid-item{
+    display:flex; flex-direction:column; align-items:center;
+    text-align:center; cursor:pointer; user-select:none;
+  }
+  .grid-item .thumb{
+    width: 150px;
+    aspect-ratio: 5 / 4;
+    border-radius: 5px;
+    overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    background: #2a2a2a;
+    margin-bottom: 8px;
+  }
+  .grid-item .thumb img{
+    width:100%; height:100%; object-fit:contain; display:block;
+  }
+  .grid-item .thumb.photo-vertical{
+    width: 112px;
+    aspect-ratio: 3 / 4;
+  }
+  .grid-item .thumb.folder{ background: transparent; }
+  .grid-item .thumb.folder svg{ width: 92px; height: 80px; }
+  .grid-item .thumb.pdf{ background: transparent; }
+  .grid-item .thumb.pdf svg{ width: 64px; height: 80px; }
+  .grid-item .gi-label{
+    font-size: 12px; color: var(--ink-dim);
+  }
+  .grid-item:hover .gi-label{ color: var(--ink); }
+  .grid-item .tag-dot{
+    width:7px; height:7px; border-radius:50%;
+    display:inline-block; margin-right:5px; vertical-align:middle;
+  }
+
+  /* simple text page (Home / Links) */
+  .text-page{ max-width: 560px; font-size: 14px; line-height:1.8; color: var(--ink-dim); }
+  .text-page h1{ font-size: 20px; color: var(--ink); font-weight:600; margin-bottom: 18px; }
+  .text-page a.link-row{
+    display:block; padding: 10px 0; border-bottom:1px solid var(--line);
+    color: var(--ink); font-size: 14px; text-decoration:none;
+  }
+  .text-page a.link-row:hover{ color: var(--accent-orange); }
+
+  /* ---------------- Popup (about me.rtf) ---------------- */
+  #overlay-backdrop{
+    position:fixed; inset:0; background: rgba(0,0,0,0.0);
+    display:none; z-index:200;
+  }
+  #overlay-backdrop.open{ display:block; }
+  .popup{
+    position:absolute;
+    width: 420px;
+    max-width: 86vw;
+    background: #161616;
+    border: 1px solid #2c2c2c;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+    top: 130px; left: 50%;
+    transform: translateX(-10%);
+  }
+  .popup .titlebar{ border-bottom: 1px solid var(--line); cursor:grab; }
+  .popup .titlebar:active{ cursor:grabbing; }
+  .popup-body{
+    padding: 22px 24px 26px;
+    font-size: 14px; line-height: 1.75;
+    color: var(--ink-dim);
+    max-height: 60vh;
+    overflow-y:auto;
+  }
+  .popup-body p{ margin: 0 0 16px; }
+  .popup-body a{ color: var(--ink); text-decoration:underline; }
+
+  /* mobile */
+  @media (max-width: 760px){
+    #sidebar{
+      position:fixed; z-index:100; height:100%;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+    }
+    #sidebar.open{ transform: translateX(0); }
+    #mobile-menu-btn{
+      display:flex; position:fixed; top:10px; left:12px; z-index:150;
+      width:32px; height:32px; align-items:center; justify-content:center;
+      background:#222; border-radius:6px; border:1px solid var(--line);
+    }
+    .panel{ padding: 60px 18px 60px; }
+    .project-header{ flex-direction:column; gap: 18px; }
+    .grid-view{ grid-template-columns: repeat(auto-fill, 120px); gap: 20px 14px; }
+    .grid-item .thumb{ width:120px; height:auto; aspect-ratio: 5/4; }
+    .grid-item .thumb.photo-vertical{ width:90px; aspect-ratio: 3/4; }
+    .projects-grid{ grid-template-columns: repeat(2, 1fr); max-width:none; }
+    .projects-grid .grid-item .thumb{ width:100%; height:auto; aspect-ratio: 5/4; }
+    .project-images{ grid-template-columns: repeat(2, 1fr); gap: 18px 14px; }
+    .project-photo img{ height: auto; aspect-ratio: 5/4; }
+    .popup{ width: 90vw; left:5%; transform:none; }
+  }
+  @media (min-width: 761px){
+    #mobile-menu-btn{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <button id="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 4h14M1 8h14M1 12h14" stroke="#fff" stroke-width="1.4"/></svg>
+  </button>
+
+  <div id="sidebar">
+    <div class="titlebar">
+      <span class="traffic red"></span><span class="traffic yellow"></span><span class="traffic green"></span>
+      <span class="site-title">Lara Rotenberg</span>
+    </div>
+    <nav class="nav" id="nav"></nav>
+  </div>
+
+  <div id="content">
+    <div class="panel" id="panel"></div>
+  </div>
+
+</div>
+
+<div id="overlay-backdrop" onclick="if(event.target===this) closePopup()">
+  <div class="popup" id="popup">
+    <div class="titlebar">
+      <span class="traffic red" onclick="closePopup()" style="cursor:pointer"></span>
+      <span class="traffic yellow"></span><span class="traffic green"></span>
+      <span class="site-title" id="popup-title">about me.rtf</span>
+    </div>
+    <div class="popup-body" id="popup-body"></div>
+  </div>
+</div>
+
+<div id="lightbox-backdrop" onclick="if(event.target===this) closeLightbox()">
+  <span id="lightbox-close" onclick="closeLightbox()">&times;</span>
+  <div id="lightbox-stage">
+    <div class="lightbox-arrow" id="lightbox-prev" onclick="lightboxStep(-1)">&#8249;</div>
+    <img id="lightbox-img" src="" alt="" onclick="closeLightbox()">
+    <div class="lightbox-arrow" id="lightbox-next" onclick="lightboxStep(1)">&#8250;</div>
+  </div>
+  <div id="lightbox-caption"></div>
+</div>
+
+<script>
+/* =========================================================
+   1) YOUR CONTENT — edit everything below
+   ========================================================= */
+
+  // Folder/PDF/photo SVG icons used in grid views
+  const ICON_FOLDER = `<svg viewBox="0 0 92 80" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 14 C4 10 7 7 11 7 H34 L42 16 H81 C85 16 88 19 88 23 V66 C88 70 85 73 81 73 H11 C7 73 4 70 4 66 Z" fill="#4aa3e0"/>
+    <path d="M4 22 H88 V66 C88 70 85 73 81 73 H11 C7 73 4 70 4 66 Z" fill="#5fb3ec"/>
+  </svg>`;
+  const ICON_PDF = `<svg viewBox="0 0 64 80" xmlns="http://www.w3.org/2000/svg">
+    <path d="M6 2 H42 L58 18 V74 C58 77 55 80 52 80 H6 C3 80 0 77 0 74 V8 C0 5 3 2 6 2 Z" fill="#f3f3f3"/>
+    <path d="M42 2 L58 18 H46 C44 18 42 16 42 14 Z" fill="#c9c9c9"/>
+    <text x="29" y="56" font-size="13" font-weight="700" fill="#777" text-anchor="middle" font-family="Helvetica, Arial, sans-serif">PDF</text>
+  </svg>`;
+
+  const IMAGES = {
+    rio: "images/20-signs-of-rio.png",
+    londons: "images/the-two-londons.png",
+    cultv: "images/cultv.png",
+    nyU2: "images/ny-u2.png",
+    hourglass: "images/the-hourglass-of-memory.png",
+    yourSkin: "images/your-skin.png",
+    tasteForce: "images/taste-of-the-force.png"
+  };
+
+  // ---- Sidebar navigation ----
+  const NAV = [
+    { group: null, items: [
+      { id:"home", label:"Home" }
+    ]},
+    { group: "Selected Work", items: [
+      { id:"rio-20-signs", label:"20 Signs of Rio" },
+      { id:"two-londons", label:"The Two Londons" },
+      { id:"hourglass-memory", label:"The Hourglass of Memory" },
+      { id:"ny-u2", label:"NY / U2" },
+      { id:"your-skin", label:"Your Skin" },
+      { id:"cultv", label:"Cultv" },
+      { id:"taste-of-force", label:"Taste of the Force" }
+    ]},
+    { group: "Links", items: [
+      { id:"cv", label:"CV", external:"https://drive.google.com/file/d/1H_3_0mwqY8Y-ZDwLN4LXwnsmZuJZbqb5/view?usp=sharing" },
+      { id:"linkedin", label:"LinkedIn", external:"https://www.linkedin.com/in/lara-rotenberg/" }
+    ]}
+  ];
+
+  // ---- Home page grid contents (about-me + CV row, then all projects) ----
+  const HOME_TOP_ROW = [
+    { id:"about-me", label:"about me.rtf", thumb:"photo", img:"images/about-me.jpg", openAs:"popup", vertical:true },
+    { id:"cv-pdf", label:"CV_LaraRotenberg_EN.pdf", thumb:"pdf", openAs:"external", external:"https://drive.google.com/file/d/1H_3_0mwqY8Y-ZDwLN4LXwnsmZuJZbqb5/view?usp=sharing" }
+  ];
+  const HOME_PROJECTS_GRID = [
+    { id:"rio-20-signs", label:"20 Signs of Rio", thumb:"photo", img:IMAGES.rio, openAs:"page" },
+    { id:"two-londons", label:"The Two Londons", thumb:"photo", img:IMAGES.londons, openAs:"page" },
+    { id:"hourglass-memory", label:"The Hourglass of Memory", thumb:"photo", img:IMAGES.hourglass, openAs:"page" },
+    { id:"ny-u2", label:"NY / U2", thumb:"photo", img:IMAGES.nyU2, openAs:"page" },
+    { id:"your-skin", label:"Your Skin", thumb:"photo", img:IMAGES.yourSkin, openAs:"page" },
+    { id:"cultv", label:"Cultv", thumb:"photo", img:IMAGES.cultv, openAs:"page" },
+    { id:"taste-of-force", label:"Taste of the Force", thumb:"photo", img:IMAGES.tasteForce, openAs:"page" }
+  ];
+
+  // ---- Individual project pages (image 1 style) ----
+  const PROJECTS = {
+    "rio-20-signs": {
+      title: "20 Signs of Rio",
+      subtitle: "Visual Identity",
+      year: "2023",
+      question: "How do you turn a city's landmarks into a collectible, shareable visual language?",
+      description: `This project reimagines Rio de Janeiro's iconic landmarks as a collectible system of minimalist symbols designed to promote local tourism. It transforms the act of visiting the city into a structured visual "checklist," reframing cultural exploration as an interactive experience for both residents and visitors.<br><br>
+        The identity is defined by clarity, symbolism, and system-based design: each landmark is reduced to its essential geometric form, creating a cohesive family of icons. This reductive approach ensures immediate recognition while preserving the distinct identity of each site. The system operates as a unified visual language intended for scalability across tourism and public communication contexts.<br><br>
+        Following the acquisition of full copyright by the Rio de Janeiro Secretariat of Tourism, the identity was featured as the central visual system of a major exhibition stand at ABAV EXPO 2023, which welcomed over 40,000 visitors. The installation functioned as an interactive environment, where large-scale applications extended the identity into physical space and visitor-generated content, transforming the system into both cultural reference and souvenir.`,
+      images: ["images/projects/rio-20-signs/0.jpg","images/projects/rio-20-signs/1.jpg","images/projects/rio-20-signs/2.jpg","images/projects/rio-20-signs/3.jpg","images/projects/rio-20-signs/4.jpg","images/projects/rio-20-signs/5.jpg","images/projects/rio-20-signs/6.jpg","images/projects/rio-20-signs/7.jpg","images/projects/rio-20-signs/8.jpg","images/projects/rio-20-signs/9.jpg","images/projects/rio-20-signs/10.jpg","images/projects/rio-20-signs/11.jpg","images/projects/rio-20-signs/12.jpg"]
+    },
+    "two-londons": {
+      title: "The Two Londons",
+      subtitle: "Illustration",
+      year: "",
+      question: "How can a single image hold the tension between tradition and modernity?",
+      description: `This illustration project explores the cultural duality of London, translating the tension between tradition and modernity into a single visual system. The work constructs a narrative based on contrast, symbolism, and national identity.<br><br>
+        The composition is structured through the opposition of two archetypal figures: the Royal Guard represents institutional history, order, and continuity, expressed through uniform, discipline, and references to British state iconography. The Punk figure embodies subculture, rebellion, and cultural transformation, defined through expressive styling and musical references. Their confrontation establishes a direct visual and conceptual tension that drives the narrative structure of the composition.<br><br>
+        The color palette is derived from the Union Jack, grounding the work in national identity while reinforcing duality through controlled chromatic logic.`,
+      images: ["images/projects/two-londons/0.jpg","images/projects/two-londons/1.jpg","images/projects/two-londons/2.jpg"]
+    },
+    "hourglass-memory": {
+      title: "The Hourglass of Memory",
+      subtitle: "Digital Collage",
+      year: "",
+      question: "What happens to collective memory when culture itself becomes a target of war?",
+      description: `This political collage explores the destruction of cultural heritage in times of conflict. Developed in response to an article on the Ukrainian war, the project translates cultural loss into a visual essay centered on the destruction of works by Ukrainian folk artist Maria Prymachenko.<br><br>
+        The work reflects on cultural erasure beyond physical destruction, arguing that when cultural production is targeted, collective memory is simultaneously dismantled. The narrative is structured through a central metaphor: the hourglass represents the fragility and finiteness of cultural memory, suspending artworks as symbols of heritage under threat.<br><br>
+        The moment of rupture is defined by the word "WAR," which transforms the composition through fragmentation and dissolution. Visual elements disintegrate into particles of blue and yellow, referencing the Ukrainian flag and its ongoing cultural and historical resilience.`,
+      images: ["images/projects/hourglass-memory/0.jpg","images/projects/hourglass-memory/1.jpg","images/projects/hourglass-memory/2.jpg"]
+    },
+    "ny-u2": {
+      title: "NY / U2",
+      subtitle: "Advertising",
+      year: "",
+      question: "How does visual hierarchy capture attention within a fast-moving urban environment?",
+      description: `This concert poster for U2 at Madison Square Garden explores how visual hierarchy can capture attention within a fast-moving urban environment. The project focuses on typographic structure as a communication system designed for immediate legibility.<br><br>
+        The composition operates through controlled hierarchy and spatial clarity: the band name, "U2," functions as the primary visual anchor, emphasized through scale and typographic weight to ensure immediate recognition. Secondary information, including location and event context, is structured through differentiated type families and spacing systems.<br><br>
+        Contrast and alignment establish a clear reading path, guiding the viewer through information in a controlled sequence of attention.`,
+      images: ["images/projects/ny-u2/0.jpg","images/projects/ny-u2/1.jpg"]
+    },
+    "your-skin": {
+      title: "Your Skin",
+      subtitle: "Product Design",
+      year: "",
+      question: "What if visibility, not invisibility, was the standard for everyday products?",
+      description: `This conceptual design project explores the visibility of care in everyday products through the redesign of adhesive bandages adapted to different skin tones. It addresses issues of inclusivity, representation, and standardization in consumer design.<br><br>
+        The system is developed around the principle of visual integration rather than visibility: each variation is designed to blend with a spectrum of skin tones, reducing contrast and repositioning the bandage as a seamless extension of the body.<br><br>
+        The project challenges the notion of a universal "standard" skin tone in product design, proposing inclusivity as a structural design requirement rather than an adaptation.`,
+      images: ["images/projects/your-skin/0.jpg","images/projects/your-skin/1.jpg"]
+    },
+    "cultv": {
+      title: "Cultv",
+      subtitle: "Motion Identity",
+      year: "",
+      question: "How do you translate cinematic heritage into a cohesive broadcast identity?",
+      description: `This motion identity for a fictional television channel dedicated to cult cinema explores how to translate cinematic heritage into a cohesive brand system. The work draws from nostalgia, film history, and broadcast culture to construct a unified visual identity.<br><br>
+        The system is built on a symbolic and referential aesthetic: a grayscale foundation references the language of early cinema, grounding the identity in black-and-white film history, while gold accents introduce contrast, evoking cinematic prestige and cultural legacy. The visual system is constructed from references to film production objects, including reels, lenses, and clapperboards, forming a coherent material language rooted in filmmaking.<br><br>
+        The slogan "cultv: cultivating a love for cinema" operates as both linguistic play and conceptual framework, merging cult culture with broadcast identity and the idea of cultural cultivation.`,
+      images: ["images/projects/cultv/0.jpg","images/projects/cultv/1.jpg","images/projects/cultv/2.jpg"]
+    },
+    "taste-of-force": {
+      title: "Taste of the Force",
+      subtitle: "Packaging Design",
+      year: "",
+      question: "How can flavor, character, and color work together to tell a story through packaging?",
+      description: `This packaging project explores how a fictional chocolate brand could translate the Star Wars universe into a sensory and interactive design system. The concept aligns flavor, character, and color to create a structured narrative experience within a consumer object.<br><br>
+        The system transforms packaging into a layered storytelling device: each flavor is assigned to a character through a defined chromatic and material logic, creating immediate associations between taste and narrative identity. Dark chocolate corresponds to Darth Vader, while white chocolate is associated with a Stormtrooper, establishing a consistent system of symbolic pairing.<br><br>
+        The packaging operates as a collectible object, embedding narrative details within its surface. The visual language references cinematic space aesthetics, while hidden elements and typographic interventions reward closer inspection and engagement.`,
+      images: ["images/projects/taste-of-force/0.jpg","images/projects/taste-of-force/1.jpg","images/projects/taste-of-force/2.jpg","images/projects/taste-of-force/3.jpg","images/projects/taste-of-force/4.jpg","images/projects/taste-of-force/5.jpg","images/projects/taste-of-force/6.jpg","images/projects/taste-of-force/7.jpg","images/projects/taste-of-force/8.jpg"]
+    }
+  };
+
+  const ABOUT_ME_HTML = `
+    <p>Hello.</p>
+    <p>I'm a Brazilian graphic designer based in Paris.</p>
+    <p>Drawing from a multidisciplinary background in design, digital marketing, arts, and cinema, I create thoughtful visual solutions informed by cultural awareness, adaptability, and strategic thinking.</p>
+    <p>Feel free to send me an email: <a href="mailto:lara.rotenberg@gmail.com">lara.rotenberg@gmail.com</a></p>
+    <p>Take care,<br>Lara</p>
+  `;
+
+/* ========================================================= */
+/* 2) ENGINE — no need to edit below this line                */
+/* ========================================================= */
+
+  const navEl = document.getElementById('nav');
+  const panelEl = document.getElementById('panel');
+
+  function buildNav(){
+    const FOLDER_SVG = `<svg viewBox="0 0 16 14" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.2C1 2.5 1.6 2 2.3 2H6L7.3 3.4H13.7C14.4 3.4 15 4 15 4.6V11C15 11.7 14.4 12.3 13.7 12.3H2.3C1.6 12.3 1 11.7 1 11Z" stroke="currentColor" stroke-width="1.1"/></svg>`;
+    navEl.innerHTML = NAV.map(section => `
+      <div class="nav-group">
+        ${section.group ? `<div class="nav-group-label">${section.group}</div>` : ''}
+        ${section.items.map(item => `
+          <div class="nav-item" data-id="${item.id}" data-external="${item.external||''}">
+            <span class="folder-glyph">${FOLDER_SVG}</span>${item.label}
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
+
+    navEl.querySelectorAll('.nav-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const ext = el.dataset.external;
+        if(ext){ window.open(ext, '_blank'); return; }
+        navigate(el.dataset.id);
+      });
+    });
+  }
+
+  function setActiveNav(id){
+    navEl.querySelectorAll('.nav-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.id === id);
+    });
+  }
+
+  function navigate(id){
+    setActiveNav(id);
+    document.getElementById('sidebar').classList.remove('open');
+
+    if(id === 'home'){ return renderHome(); }
+    if(id === 'cv'){ return; } // handled via external link
+    if(PROJECTS[id]){ return renderProject(id); }
+    renderHome();
+  }
+
+  function renderHome(){
+    panelEl.innerHTML = `
+      <div class="grid-view home-top-row">${HOME_TOP_ROW.map(renderGridItem).join('')}</div>
+      <div class="grid-view projects-grid">${HOME_PROJECTS_GRID.map(renderGridItem).join('')}</div>
+    `;
+    bindGridItemClicks(HOME_TOP_ROW.concat(HOME_PROJECTS_GRID));
+  }
+
+  function bindGridItemClicks(itemList){
+    panelEl.querySelectorAll('.grid-item').forEach(el => {
+      const item = itemList.find(g => g.id === el.dataset.id);
+      if(!item) return;
+      el.addEventListener('click', () => handleGridItemOpen(item));
+    });
+  }
+
+  function renderGridItem(item){
+    let thumbHTML = '';
+    if(item.thumb === 'photo' && item.img){
+      const vClass = item.vertical ? ' photo-vertical' : '';
+      thumbHTML = `<div class="thumb${vClass}"><img src="${item.img}" alt=""></div>`;
+    } else if(item.thumb === 'folder'){
+      thumbHTML = `<div class="thumb folder">${ICON_FOLDER}</div>`;
+    } else if(item.thumb === 'pdf'){
+      thumbHTML = `<div class="thumb pdf">${ICON_PDF}</div>`;
+    } else {
+      thumbHTML = `<div class="thumb folder">${ICON_FOLDER}</div>`;
+    }
+    return `
+      <div class="grid-item" data-id="${item.id}">
+        ${thumbHTML}
+        <div class="gi-label">${item.tag ? `<span class="tag-dot" style="background:${item.tag}"></span>`:''}${item.label}</div>
+      </div>
+    `;
+  }
+
+  function handleGridItemOpen(item){
+    if(item.openAs === 'popup'){ return openPopup(item.label, ABOUT_ME_HTML); }
+    if(item.openAs === 'external'){ window.open(item.external, '_blank'); return; }
+    if(item.openAs === 'page'){ navigate(item.id); return; }
+  }
+
+  function filenameFromPath(path){
+    return path.split('/').pop();
+  }
+
+  function renderProject(id){
+    const p = PROJECTS[id];
+    if(!p) return renderHome();
+    panelEl.innerHTML = `
+      <div class="project-header">
+        <div class="project-meta">
+          <div class="proj-title">${p.title}</div>
+          <div class="proj-category">${p.subtitle||''}</div>
+        </div>
+        <div class="project-desc">
+          ${p.question ? `<p><strong>${p.question}</strong></p>` : ''}
+          <p>${p.description||''}</p>
+        </div>
+      </div>
+      <div class="project-images">
+        ${(p.images||[]).map(src => `
+          <div class="project-photo" data-src="${src}">
+            <img src="${src}" alt="${p.title}">
+            <div class="photo-caption">${filenameFromPath(src)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    panelEl.querySelectorAll('.project-photo').forEach((el, idx) => {
+      el.addEventListener('click', () => openLightbox(p.images, idx));
+    });
+  }
+
+  // ---- lightbox ----
+  const lightboxBackdrop = document.getElementById('lightbox-backdrop');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const lightboxCaption = document.getElementById('lightbox-caption');
+  const lightboxPrev = document.getElementById('lightbox-prev');
+  const lightboxNext = document.getElementById('lightbox-next');
+  let lightboxImages = [];
+  let lightboxIndex = 0;
+
+  function openLightbox(images, index){
+    lightboxImages = images || [];
+    lightboxIndex = index || 0;
+    showLightboxImage();
+    lightboxBackdrop.classList.add('open');
+  }
+  function showLightboxImage(){
+    const src = lightboxImages[lightboxIndex];
+    lightboxImg.src = src;
+    lightboxCaption.textContent = filenameFromPath(src);
+    lightboxPrev.classList.toggle('disabled', lightboxIndex <= 0);
+    lightboxNext.classList.toggle('disabled', lightboxIndex >= lightboxImages.length - 1);
+  }
+  function lightboxStep(delta){
+    const next = lightboxIndex + delta;
+    if(next < 0 || next >= lightboxImages.length) return;
+    lightboxIndex = next;
+    showLightboxImage();
+  }
+  function closeLightbox(){
+    lightboxBackdrop.classList.remove('open');
+    lightboxImg.src = '';
+  }
+
+  // ---- popup ----
+  const overlayBackdrop = document.getElementById('overlay-backdrop');
+  const popup = document.getElementById('popup');
+  const popupTitle = document.getElementById('popup-title');
+  const popupBody = document.getElementById('popup-body');
+
+  function openPopup(title, html){
+    popupTitle.textContent = title;
+    popupBody.innerHTML = html;
+    overlayBackdrop.classList.add('open');
+    makePopupDraggable();
+  }
+  function closePopup(){
+    overlayBackdrop.classList.remove('open');
+  }
+
+  function makePopupDraggable(){
+    const bar = popup.querySelector('.titlebar');
+    let dragging=false, startX, startY, originX, originY;
+    bar.onmousedown = (e) => {
+      if(e.target.classList.contains('red')) return;
+      dragging = true;
+      startX = e.clientX; startY = e.clientY;
+      const rect = popup.getBoundingClientRect();
+      originX = rect.left; originY = rect.top;
+      popup.style.transform = 'none';
+      popup.style.left = originX + 'px';
+      popup.style.top = originY + 'px';
+    };
+    window.onmousemove = (e) => {
+      if(!dragging) return;
+      popup.style.left = (originX + e.clientX - startX) + 'px';
+      popup.style.top = (originY + e.clientY - startY) + 'px';
+    };
+    window.onmouseup = () => { dragging = false; };
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape'){
+      closeLightbox();
+      closePopup();
+    }
+    if(lightboxBackdrop.classList.contains('open')){
+      if(e.key === 'ArrowLeft'){ lightboxStep(-1); }
+      if(e.key === 'ArrowRight'){ lightboxStep(1); }
+    }
+  });
+
+  // ---- init ----
+  buildNav();
+  navigate('home');
+</script>
+
+</body>
+</html>
