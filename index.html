@@ -160,7 +160,7 @@
   }
   .project-photo{
     display:flex; flex-direction:column;
-    cursor: zoom-in;
+    cursor: pointer;
   }
   .project-photo img{
     display:block;
@@ -217,7 +217,7 @@
     max-width: 84vw; max-height: 80vh;
     border-radius: 6px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-    cursor: zoom-out;
+    cursor: pointer;
   }
   #lightbox-caption{
     margin-top: 14px;
@@ -450,7 +450,8 @@
     tasteForce: "images/taste-of-the-force.png",
     hourglass: "images/the-hourglass-of-memory.png",
     yourSkin: "images/your-skin.png",
-    creamy: "images/creamy.png"
+    creamy: "images/creamy.png",
+    jeanProuve: "images/jean-prouve.png"
   };
 
   // ---- Tags legend ----
@@ -476,6 +477,7 @@
       { id:"ny-u2", label:"NY / U2" },
       { id:"cultv", label:"Cultv" },
       { id:"taste-of-force", label:"Nestlé + Star Wars" },
+      { id:"jean-prouve", label:"The France of Jean Prouvé" },
       { id:"hourglass-memory", label:"The Hourglass of Memory" },
       { id:"your-skin", label:"Your Skin" },
       { id:"creamy", label:"Creamy Ice Cream" }
@@ -493,6 +495,7 @@
     { id:"ny-u2", label:"NY / U2", thumb:"photo", img:IMAGES.nyU2, openAs:"page", tag:"var(--tag-red)" },
     { id:"cultv", label:"Cultv", thumb:"photo", img:IMAGES.cultv, openAs:"page", tag:"var(--tag-yellow)" },
     { id:"taste-of-force", label:"Nestlé + Star Wars", thumb:"photo", img:IMAGES.tasteForce, openAs:"page", tag:"var(--tag-blue)" },
+    { id:"jean-prouve", label:"The France of Jean Prouvé", thumb:"photo", img:IMAGES.jeanProuve, openAs:"page", tag:"var(--tag-yellow)" },
     { id:"hourglass-memory", label:"The Hourglass of Memory", thumb:"photo", img:IMAGES.hourglass, openAs:"page", tag:"var(--tag-red)" },
     { id:"your-skin", label:"Your Skin", thumb:"photo", img:IMAGES.yourSkin, openAs:"page", tag:"var(--tag-red)" },
     { id:"creamy", label:"Creamy Ice Cream", thumb:"photo", img:IMAGES.creamy, openAs:"page", tag:"var(--tag-yellow)" }
@@ -517,6 +520,15 @@
       question: "",
       description: `This illustration explores London's duality between tradition and modernity through two archetypal figures: a Royal Guard representing institutional history, and a Punk embodying rebellion and subculture. Their confrontation, set against a Union Jack–derived palette, turns national identity into a way to captivate tourists to explore the city's diverse cultural landscape.`,
       images: ["images/projects/two-londons/0.jpg","images/projects/two-londons/1.jpg","images/projects/two-londons/2.jpg","images/projects/two-londons/3.jpg","images/projects/two-londons/4.jpg","images/projects/two-londons/5.jpg"]
+    },
+    "jean-prouve": {
+      title: "The France of Jean Prouvé",
+      tag: "var(--tag-yellow)",
+      subtitle: "Visual Identity project for Galerie Patrick Seguin",
+      year: "",
+      question: "",
+      description: `This illustration project maps Jean Prouvé's architectural legacy across France for an internationally renowned gallery focused on 20th-century design and modernist architecture. A series of 24 illustrations, each created in Procreate to represent a key building, is composed into the silhouette of France, turning the map into a narrative system. The project was later animated and used as introductory sequences for a video series exploring each location.`,
+      images: ["images/projects/jean-prouve/0.jpg","images/projects/jean-prouve/1.jpg","images/projects/jean-prouve/2.jpg","images/projects/jean-prouve/3.jpg"]
     },
     "hourglass-memory": {
       title: "The Hourglass of Memory",
