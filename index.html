@@ -142,6 +142,10 @@
     color: var(--ink-dim);
     margin-top: 4px;
   }
+  .proj-category .tag-dot{
+    width:7px; height:7px; border-radius:50%;
+    display:inline-block; margin-right:6px; vertical-align:middle;
+  }
   .project-desc{
     font-size: 13.5px; color: var(--ink-dim);
     line-height: 1.7;
@@ -249,12 +253,21 @@
     gap: 32px 24px;
   }
   .home-header{
-    font-size: 12.5px;
-    color: var(--ink-dim);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
     margin-bottom: 16px;
     letter-spacing: 0.01em;
   }
+  .home-top-row .grid-item{
+    align-items: flex-start;
+    text-align: left;
+  }
   .home-top-row{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px 48px;
+    max-width: 1100px;
     padding-bottom: 28px;
     margin-bottom: 28px;
     border-bottom: 1px solid var(--line);
@@ -460,10 +473,10 @@
     { group: "Selected Work", items: [
       { id:"rio-20-signs", label:"20 Signs of Rio" },
       { id:"two-londons", label:"The Two Londons" },
-      { id:"hourglass-memory", label:"The Hourglass of Memory" },
+      { id:"cultv", label:"Cultv" },
       { id:"ny-u2", label:"NY / U2" },
       { id:"your-skin", label:"Your Skin" },
-      { id:"cultv", label:"Cultv" },
+      { id:"hourglass-memory", label:"The Hourglass of Memory" },
       { id:"taste-of-force", label:"Nestlé + Star Wars" }
     ]}
   ];
@@ -476,10 +489,10 @@
   const HOME_PROJECTS_GRID = [
     { id:"rio-20-signs", label:"20 Signs of Rio", thumb:"photo", img:IMAGES.rio, openAs:"page", tag:"var(--tag-yellow)" },
     { id:"two-londons", label:"The Two Londons", thumb:"photo", img:IMAGES.londons, openAs:"page", tag:"var(--tag-red)" },
-    { id:"hourglass-memory", label:"The Hourglass of Memory", thumb:"photo", img:IMAGES.hourglass, openAs:"page", tag:"var(--tag-red)" },
+    { id:"cultv", label:"Cultv", thumb:"photo", img:IMAGES.cultv, openAs:"page", tag:"var(--tag-yellow)" },
     { id:"ny-u2", label:"NY / U2", thumb:"photo", img:IMAGES.nyU2, openAs:"page", tag:"var(--tag-red)" },
     { id:"your-skin", label:"Your Skin", thumb:"photo", img:IMAGES.yourSkin, openAs:"page", tag:"var(--tag-red)" },
-    { id:"cultv", label:"Cultv", thumb:"photo", img:IMAGES.cultv, openAs:"page", tag:"var(--tag-yellow)" },
+    { id:"hourglass-memory", label:"The Hourglass of Memory", thumb:"photo", img:IMAGES.hourglass, openAs:"page", tag:"var(--tag-red)" },
     { id:"taste-of-force", label:"Nestlé + Star Wars", thumb:"photo", img:IMAGES.tasteForce, openAs:"page", tag:"var(--tag-blue)" }
   ];
 
@@ -487,6 +500,7 @@
   const PROJECTS = {
     "rio-20-signs": {
       title: "20 Signs of Rio",
+      tag: "var(--tag-yellow)",
       subtitle: "Visual Identity project for the city of Rio de Janeiro",
       year: "2023",
       question: "",
@@ -495,6 +509,7 @@
     },
     "two-londons": {
       title: "The Two Londons",
+      tag: "var(--tag-red)",
       subtitle: "Advertising for the city of London",
       year: "",
       question: "",
@@ -503,6 +518,7 @@
     },
     "hourglass-memory": {
       title: "The Hourglass of Memory",
+      tag: "var(--tag-red)",
       subtitle: "Political Advertising on War and Memory",
       year: "",
       question: "",
@@ -511,6 +527,7 @@
     },
     "ny-u2": {
       title: "NY / U2",
+      tag: "var(--tag-red)",
       subtitle: "Advertising for an International Concert",
       year: "",
       question: "",
@@ -519,6 +536,7 @@
     },
     "your-skin": {
       title: "Your Skin",
+      tag: "var(--tag-red)",
       subtitle: " Advertising for Inclusive Product",
       year: "",
       question: "",
@@ -527,6 +545,7 @@
     },
     "cultv": {
       title: "Cultv",
+      tag: "var(--tag-yellow)",
       subtitle: "Visual Identity and Motion Design for Tv channel",
       year: "",
       question: "",
@@ -536,6 +555,7 @@
     },
     "taste-of-force": {
       title: "Nestlé + Star Wars",
+      tag: "var(--tag-blue)",
       subtitle: "Packaging Design for a Special Edition Chocolate Bar",
       year: "",
       question: "",
@@ -680,7 +700,7 @@
       <div class="project-header">
         <div class="project-meta">
           <div class="proj-title">${p.title}</div>
-          <div class="proj-category">${p.subtitle||''}</div>
+          <div class="proj-category">${p.tag ? `<span class="tag-dot" style="background:${p.tag}"></span>` : ''}${p.subtitle||''}</div>
         </div>
         <div class="project-desc">
           ${p.question ? `<p><strong>${p.question}</strong></p>` : ''}
