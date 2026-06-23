@@ -27,6 +27,9 @@
     --traffic-red: #ff5f57;
     --traffic-yellow: #febc2e;
     --traffic-green: #28c840;
+    --tag-yellow: #febc2e;
+    --tag-red: #ff5f57;
+    --tag-blue: #4aa3e0;
     --font-body: -apple-system, "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
   }
 
@@ -99,6 +102,18 @@
   .nav-item.active{ color: var(--ink); }
   .nav-item.active .folder-glyph,
   .nav-item:hover .folder-glyph{ opacity:1; color: var(--ink); }
+
+  .tag-item{
+    display:flex; align-items:center; gap: 9px;
+    padding: 5px 16px;
+    font-size: 13px; color: var(--ink-dim);
+    user-select:none;
+    white-space:nowrap;
+  }
+  .tag-item .tag-dot{
+    width:9px; height:9px; border-radius:50%;
+    flex-shrink:0;
+  }
 
   /* ---------------- Content area ---------------- */
   #content{
@@ -232,6 +247,12 @@
     display:grid;
     grid-template-columns: repeat(auto-fill, 150px);
     gap: 32px 24px;
+  }
+  .home-header{
+    font-size: 12.5px;
+    color: var(--ink-dim);
+    margin-bottom: 16px;
+    letter-spacing: 0.01em;
   }
   .home-top-row{
     padding-bottom: 28px;
@@ -419,10 +440,22 @@
     tasteForce: "images/taste-of-the-force.png"
   };
 
+  // ---- Tags legend ----
+  const TAGS = [
+    { id:"visual-identity", label:"Visual Identity", color:"var(--tag-yellow)" },
+    { id:"advertising", label:"Advertising", color:"var(--tag-red)" },
+    { id:"packaging", label:"Packaging", color:"var(--tag-blue)" }
+  ];
+
   // ---- Sidebar navigation ----
   const NAV = [
     { group: null, items: [
       { id:"home", label:"Home" }
+    ]},
+    { group: null, items: [
+      { id:"about-me", label:"About / Contact" },
+      { id:"cv", label:"CV", external:"cv/CV_LaraRotenberg_EN.pdf" },
+      { id:"linkedin", label:"LinkedIn", external:"https://www.linkedin.com/in/lara-rotenberg/" }
     ]},
     { group: "Selected Work", items: [
       { id:"rio-20-signs", label:"20 Signs of Rio" },
@@ -432,10 +465,6 @@
       { id:"your-skin", label:"Your Skin" },
       { id:"cultv", label:"Cultv" },
       { id:"taste-of-force", label:"Nestlé + Star Wars" }
-    ]},
-    { group: "Links", items: [
-      { id:"cv", label:"CV", external:"cv/CV_LaraRotenberg_EN.pdf" },
-      { id:"linkedin", label:"LinkedIn", external:"https://www.linkedin.com/in/lara-rotenberg/" }
     ]}
   ];
 
@@ -445,13 +474,13 @@
     { id:"cv-pdf", label:"CV_LaraRotenberg_EN.pdf", thumb:"photo", img:"images/cv-thumbnail.png", openAs:"external", external:"cv/CV_LaraRotenberg_EN.pdf", vertical:true }
   ];
   const HOME_PROJECTS_GRID = [
-    { id:"rio-20-signs", label:"20 Signs of Rio", thumb:"photo", img:IMAGES.rio, openAs:"page" },
-    { id:"two-londons", label:"The Two Londons", thumb:"photo", img:IMAGES.londons, openAs:"page" },
-    { id:"hourglass-memory", label:"The Hourglass of Memory", thumb:"photo", img:IMAGES.hourglass, openAs:"page" },
-    { id:"ny-u2", label:"NY / U2", thumb:"photo", img:IMAGES.nyU2, openAs:"page" },
-    { id:"your-skin", label:"Your Skin", thumb:"photo", img:IMAGES.yourSkin, openAs:"page" },
-    { id:"cultv", label:"Cultv", thumb:"photo", img:IMAGES.cultv, openAs:"page" },
-    { id:"taste-of-force", label:"Nestlé + Star Wars", thumb:"photo", img:IMAGES.tasteForce, openAs:"page" }
+    { id:"rio-20-signs", label:"20 Signs of Rio", thumb:"photo", img:IMAGES.rio, openAs:"page", tag:"var(--tag-yellow)" },
+    { id:"two-londons", label:"The Two Londons", thumb:"photo", img:IMAGES.londons, openAs:"page", tag:"var(--tag-red)" },
+    { id:"hourglass-memory", label:"The Hourglass of Memory", thumb:"photo", img:IMAGES.hourglass, openAs:"page", tag:"var(--tag-red)" },
+    { id:"ny-u2", label:"NY / U2", thumb:"photo", img:IMAGES.nyU2, openAs:"page", tag:"var(--tag-red)" },
+    { id:"your-skin", label:"Your Skin", thumb:"photo", img:IMAGES.yourSkin, openAs:"page", tag:"var(--tag-red)" },
+    { id:"cultv", label:"Cultv", thumb:"photo", img:IMAGES.cultv, openAs:"page", tag:"var(--tag-yellow)" },
+    { id:"taste-of-force", label:"Nestlé + Star Wars", thumb:"photo", img:IMAGES.tasteForce, openAs:"page", tag:"var(--tag-blue)" }
   ];
 
   // ---- Individual project pages (image 1 style) ----
@@ -555,7 +584,16 @@
           </div>
         `).join('')}
       </div>
-    `).join('');
+    `).join('') + `
+      <div class="nav-group">
+        <div class="nav-group-label">Tags</div>
+        ${TAGS.map(tag => `
+          <div class="tag-item">
+            <span class="tag-dot" style="background:${tag.color}"></span>${tag.label}
+          </div>
+        `).join('')}
+      </div>
+    `;
 
     navEl.querySelectorAll('.nav-item').forEach(el => {
       el.addEventListener('click', () => {
@@ -591,6 +629,7 @@
 
     if(id === 'home'){ return renderHome(); }
     if(id === 'cv'){ return; } // handled via external link
+    if(id === 'about-me'){ return openPopup('about-me//contact', ABOUT_ME_HTML); }
     if(PROJECTS[id]){ return renderProject(id); }
     renderHome();
   }
@@ -603,6 +642,7 @@
 
   function renderHome(){
     panelEl.innerHTML = `
+      <div class="home-header">Portfolio</div>
       <div class="grid-view home-top-row">${HOME_TOP_ROW.map(renderGridItem).join('')}</div>
       <div class="grid-view projects-grid">${HOME_PROJECTS_GRID.map(renderGridItem).join('')}</div>
     `;
