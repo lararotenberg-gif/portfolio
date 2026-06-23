@@ -601,6 +601,7 @@
 
   const navEl = document.getElementById('nav');
   const panelEl = document.getElementById('panel');
+  const contentEl = document.getElementById('content');
 
   function buildNav(){
     const FOLDER_SVG = `<svg viewBox="0 0 16 14" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.2C1 2.5 1.6 2 2.3 2H6L7.3 3.4H13.7C14.4 3.4 15 4 15 4.6V11C15 11.7 14.4 12.3 13.7 12.3H2.3C1.6 12.3 1 11.7 1 11Z" stroke="currentColor" stroke-width="1.1"/></svg>`;
@@ -656,10 +657,11 @@
       }
     }
 
-    if(id === 'home'){ return renderHome(); }
+    if(id === 'home'){ contentEl.scrollTop = 0; return renderHome(); }
     if(id === 'cv'){ return; } // handled via external link
     if(id === 'about-me'){ return openPopup('about-me//contact', ABOUT_ME_HTML); }
-    if(PROJECTS[id]){ return renderProject(id); }
+    if(PROJECTS[id]){ contentEl.scrollTop = 0; return renderProject(id); }
+    contentEl.scrollTop = 0;
     renderHome();
   }
 
